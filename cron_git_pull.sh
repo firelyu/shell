@@ -1,6 +1,6 @@
 #!/bin/sh
 
-GIT="git"
+GIT="$HOME/bin/git"
 REPO_LOC="$HOME/workspace/block_dedup"
 LOG_FILE="$HOME/workspace/cron_git_pull.log"
 
