@@ -43,7 +43,7 @@ function mount_ntfs {
     fi
     mount -t $NTFS_FS -o $NTFS_OPT $disk $mp
 
-    return 0
+    return $?
 }
 
 # Sync the photos in each dir
@@ -80,6 +80,24 @@ root_mp='/Volumes'
 photo_mp="$root_mp/Photography"
 mount_ntfs $photo_part $photo_mp
 [ $? -ne 0 ] && exit 1
+echo "Mount the $photo_part on $photo_mp"
+
+while true; do
+    echo 'Do you want to continue to rsync the photoes? [Y/N]'
+    read chosen
+    case $chosen in
+    Y|y)
+        break
+        ;;
+    N|n)
+        echo "You can do writing operations on the $photo_mp"
+        exit 0
+        ;;
+    "")
+        echo "Invalid option."
+        ;;
+    esac
+done
 
 local_photo='/Users/yliao/Pictures'
 rsync_photo $local_photo $photo_mp
