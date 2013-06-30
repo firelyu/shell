@@ -50,6 +50,7 @@ function mount_ntfs {
 # Return
 # 0 - Rsync the each sub-directory from src_dir to dst_dir.
 # 1 - Fail to rsync in either sub-directory from src_dir to dst_dir.
+EXCLUDE_FILE='.DS_Store|._.DS_Store'
 function rsync_photo {
     src_dir="$1"
     dst_dir="$2"
@@ -57,7 +58,11 @@ function rsync_photo {
     for folder in 'Photo' 'RAW' '商业摄影' '婚礼专辑'; do
         src="$src_dir/$folder"
         dst="$dst_dir/$folder"
-        $RSYNC -rvt --iconv utf8 --delete "$src/" "$dst/"
+        cmd="$RSYNC -rvt --iconv utf8 --delete --exclude='$EXCLUDE_FILE' $src/ $dst/"
+        echo "$cmd"
+        # Don't need the output.
+        # Use ($cmd), not result=`$cmd`
+        ($cmd)
         if [ $? -ne 0 ]; then
             echo "Fail to rsync the photoes from $src to $dst."
             return 1
@@ -78,7 +83,7 @@ check_uuid $photo_part $photo_uuid
 
 root_mp='/Volumes'
 photo_mp="$root_mp/Photography"
-mount_ntfs $photo_part $photo_mp
+#mount_ntfs $photo_part $photo_mp
 [ $? -ne 0 ] && exit 1
 echo "Mount the $photo_part on $photo_mp"
 
