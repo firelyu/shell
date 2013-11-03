@@ -3,30 +3,33 @@
 JPG='JPG'
 RAW='CR2'
 
-PHOTO_BASE="$HOME/Pictures/Photo"
-RAW_BASE="$HOME/Pictures/RAW"
+PHOTO_ROOT="$HOME/Pictures/Photo"
+RAW_ROOT="$HOME/Pictures/RAW"
 
 TARGET_DIR='2013/20131012/九寨沟'
 #TARGET_DIR='test'
 
-TARGET_PHOTO_DIR="$PHOTO_BASE/$TARGET_DIR"
-TARGET_RAW_DIR="$RAW_BASE/$TARGET_DIR"
+TARGET_PHOTO_DIR="$PHOTO_ROOT/$TARGET_DIR"
+TARGET_RAW_DIR="$RAW_ROOT/$TARGET_DIR"
 
-for jpg in `find $TARGET_PHOTO_DIR -type f -iname "*.$JPG"`
-do
-    #echo "JPG:"
-    dir=$(dirname $jpg)
-    file=$(basename $jpg)
-    #echo $dir
-    #echo $file
+PHOTO_DB="./photo.db"
+RAW_DB="./raw.db"
+
+find $TARGET_PHOTO_DIR -type f -iname "*.$JPG" > $PHOTO_DB
+find $TARGET_RAW_DIR -type f -iname "*.$RAW" > $RAW_DB
+
+while read jpg; do
+    #echo $jpg
+    jpg_dir=$(dirname $jpg)
+    jpg_file=$(basename $jpg)
     
-    #echo "RAW:"
-    target_raw_dir=$(echo $dir | sed 's/Photo/RAW/')
-    #echo $raw_dir
-    target_raw_file=$(echo $file | sed "s/$JPG/$RAW/")
-    #echo $raw_file
+    target_raw_dir=$(echo $jpg_dir | sed 's/Photo/RAW/')
+    target_raw_file=$(echo $jpg_file | sed "s/$JPG/$RAW/")
     
-    target_raw=$(find $TARGET_RAW_DIR -type f -name $target_raw_file)
+    #set -x
+    target_raw=$(sed -n "/$target_raw_file/p" $RAW_DB)
+    #echo $target_raw
+    #set +x
     
     if [ "$target_raw" == "" ]; then
         continue
@@ -42,4 +45,5 @@ do
         mv $target_raw $target_raw_dir/$target_raw_file
     fi
     
-done
+done < $PHOTO_DB
+
