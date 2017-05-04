@@ -1,0 +1,13 @@
+#!/bin/sh
+
+LOCAL_DIR='/Users/liaoyu/Workspace/river/ASP-Engine/rcs/webconsole'
+REMOTE_HOST='rcsvm2w'
+REMOTE_DIR='/etc/rcs/webconsole'
+
+# sudopass is upload to remote host, just 'echo $PASSWORD'
+REMOTE_ASKPASS='/usr/local/bin/sudopass'
+
+rsync -arzh -v "${LOCAL_DIR}/" $REMOTE_HOST:$REMOTE_DIR
+
+ssh -t $REMOTE_HOST "export SUDO_ASKPASS=$REMOTE_ASKPASS ; sudo -A systemctl restart apache2"
+

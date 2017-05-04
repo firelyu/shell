@@ -1,0 +1,18 @@
+#!/bin/sh
+
+ROOT='/Users/liaoyu/Workspace/river/ASP-Engine'
+REMOTE_HOST='rcsvm2w'
+REMOTE_INSTALL_DIR='/home/riversec'
+REMOTE_DIR='/etc/rcs/webconsole'
+
+# sudopass is upload to remote host, just 'echo $PASSWORD'
+REMOTE_ASKPASS='/usr/local/bin/sudopass'
+
+sudo sh $ROOT/buildrcs.sh
+
+scp $ROOT/outputs/riversec_rcs.zip $REMOTE_HOST:
+
+ssh -t $REMOTE_HOST "export SUDO_ASKPASS=$REMOTE_ASKPASS ; sudo -A rm -rf $REMOTE_INSTALL_DIR/install $REMOTE_INSTALL_DIR/build $REMOTE_INSTALL_DIR/release"
+ssh -t $REMOTE_HOST "cd $REMOTE_INSTALL_DIR; unzip riversec_rcs.zip; export
+SUDO_ASKPASS=$REMOTE_ASKPAS ; sudo -A ./install install"
+ssh -t $REMOTE_HOST "export SUDO_ASKPASS=$REMOTE_ASKPAS ; sudo -A chown -R riversec $REMOTE_DIR"
